@@ -1,0 +1,14 @@
+SELECT channelGrouping,
+ARRAY_AGG(STRUCT(totals_transactions, date, geoNetwork_country)ORDER BY date, geoNetwork_country)
+FROM
+(SELECT channelGrouping, SUM(totals_transactions) AS totals_transactions, date, geoNetwork_country 
+FROM `data-to-insights.ecommerce.rev_transactions`
+-- Cleaning
+WHERE geoNetwork_country not in ('(not set)')
+AND channelGrouping is not null
+AND geoNetwork_country is not null
+AND totals_transactions is not null
+AND date is not null
+-- Grouping data by date and country based on the channel grouping
+GROUP BY channelGrouping, date, geoNetwork_country)
+GROUP BY channelGrouping
